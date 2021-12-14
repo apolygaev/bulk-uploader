@@ -100,6 +100,7 @@ if [ ! -d "${1}" ]; then
 fi
 
 # Print input parameters
+echo "Upload endpoint: ${endpoint}"
 echo "Images root directory: ${images_root_dir}"
 
 # Find images to upload
@@ -129,6 +130,7 @@ for image in $images; do
     # Check result
     if [ ${curl_ret} -eq 0 ] && [ ${http_ret_code} -eq 200 ]; then
         url=$(image_url "${curl_output}")
+
         echo "HTTP: ${http_ret} Image URL: ${url}"
         echo "${image}: ${url}" >> "${output_success}"
     else
