@@ -79,6 +79,12 @@ http_codes_list()
     sed 's/\r//g'  <<< "${1}" | sed -nr "s/HTTP\/[0-9]\.[0-9] (.*)/\1/p"
 }
 
+http_code()
+{
+    # Print HTTP code from '200 OK' pattern
+    sed -nr 's/([0-9]{3}).*/\1/p' <<< "${1}"
+}
+
 # Parse command line parameters
 if [ -z "${1}" ]; then
     print_help
@@ -118,9 +124,10 @@ for image in $images; do
 
     # Parse curl response headers
     http_ret=$(http_codes_list "${curl_output}" | tail -n 1)
+    http_ret_code=$(http_code "${http_ret}")
 
     # Check result
-    if [ ${curl_ret} -eq 0 ]; then
+    if [ ${curl_ret} -eq 0 ] && [ ${http_ret_code} -eq 200 ]; then
         url=$(image_url "${curl_output}")
         echo "HTTP: ${http_ret} Image URL: ${url}"
         echo "${image}: ${url}" >> "${output_success}"
