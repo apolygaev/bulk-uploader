@@ -9,7 +9,7 @@
 # curl, sed, coreutils, findutils
 
 # Default settings
-endpoint="image-uploader.bookmate.services/upload"
+endpoint="http://image-uploader.bookmate.services/upload"
 app_curl=$(type -p curl)
 
 output_failed="upload.failed"
@@ -24,7 +24,7 @@ fi
 # Help function
 function print_help()
 {
-    echo "A script to upload images to a.bmstatic.com using image-uploader.bookmate.services"
+    echo "A script to upload images to a.bmstatic.com using endpoint: '${endpoint}'"
     echo "Usage:"
     echo "${0} <images_root_directory>"
 }
@@ -105,7 +105,7 @@ echo "Images root directory: ${images_root_dir}"
 
 # Find images to upload
 echo "Searching for images to upload..."
-images=$(find "${images_root_dir}" -type f -name *.png)
+images=$(find . -type f -regextype posix-egrep -iregex ".*\.(jpg|jpeg|png|gif)$")
 images_num=$(wc -l <<< "${images}")
 
 echo "Images found: ${images_num}"
