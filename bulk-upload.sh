@@ -116,8 +116,10 @@ echo -n "" > "${output_success}"
 echo -n "" > "${output_failed}"
 
 # Upload images one by one
+num=1
+
 for image in $images; do
-    echo "Uploading image: ${image} Size: $(fsize_print "${image}")"
+    echo -n "Uploading image (${num}/${images_num}): [$(fsize_print "${image}")]: ${image} ..."
 
     # Upload image using curl
     curl_output=$(curl_upload_file "${image}" "${endpoint}")
@@ -131,10 +133,12 @@ for image in $images; do
     if [ ${curl_ret} -eq 0 ] && [ ${http_ret_code} -eq 200 ]; then
         url=$(image_url "${curl_output}")
 
-        echo "HTTP: ${http_ret} Image URL: ${url}"
+        echo "Success: HTTP: ${http_ret} Image URL: ${url}"
         echo "${image}: ${url}" >> "${output_success}"
     else
-        echo "Upload failed: HTTP: ${http_ret} Image: ${image}"
+        echo "Failed: HTTP: ${http_ret} Image: ${image}"
         echo "${image}: HTTP ${http_ret}" >> "${output_failed}"
     fi
+
+    num=$((num + 1))
 done
