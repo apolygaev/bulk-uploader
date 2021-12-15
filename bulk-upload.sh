@@ -41,9 +41,9 @@ size_print()
 {
     bytes=${1}
 
-    div=$((1024))
+    div=$((1024 * 1024 * 1024))
     if [ ${bytes} -ge ${div} ]; then
-        echo "$((bytes / div)) KB"
+        echo "$((bytes / div)) GB"
         return 0
     fi
 
@@ -53,9 +53,9 @@ size_print()
         return 0
     fi
 
-    div=$((1024 * 1024 * 1024))
+    div=$((1024))
     if [ ${bytes} -ge ${div} ]; then
-        echo "$((bytes / div)) GB"
+        echo "$((bytes / div)) KB"
         return 0
     fi
 
