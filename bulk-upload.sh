@@ -98,7 +98,7 @@ find_images()
     images_root_dir="${1}"
     extensions="${2}"
 
-    find "${images_root_dir}" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
+    find "${images_root_dir}/" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
 }
 
 print_num_elements()
