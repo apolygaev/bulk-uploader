@@ -24,7 +24,7 @@ if [ -z "${app_curl}" ]; then
 fi
 
 # Help function
-function print_help()
+print_help()
 {
     echo "A script to upload images to a.bmstatic.com using endpoint: '${endpoint}'"
     echo "Usage:"
@@ -32,7 +32,7 @@ function print_help()
 }
 
 # Other functions
-function curl_upload_file()
+curl_upload_file()
 {
     curl -is -X POST -H 'Content-Type: multipart/form-data' -F "data=@${image}" "${endpoint}"
 }
