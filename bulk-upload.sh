@@ -95,6 +95,23 @@ find_images()
     find "${images_root_dir}" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
 }
 
+print_num_elements()
+{
+    array="${1}"
+    num=${2}
+    curr=0
+
+    for n in ${array}; do
+        if [ ${curr} -lt ${num} ]; then
+            echo "${n}"
+        else
+            return 0
+        fi
+
+        curr=$((curr + 1))
+    done
+}
+
 # Parse command line parameters
 if [ -z "${1}" ]; then
     print_help
@@ -110,8 +127,9 @@ if [ ! -d "${1}" ]; then
 fi
 
 # Print input parameters
-echo "Upload endpoint: ${endpoint}"
+echo "Upload endpoint:       ${endpoint}"
 echo "Images root directory: ${images_root_dir}"
+echo "Images extensions:     ${extensions}"
 
 # Find images to upload
 echo "Searching for images to upload (${extensions})..."
@@ -119,6 +137,12 @@ images=$(find_images "${images_root_dir}" "${extensions}")
 
 images_num=$(wc -l <<< "${images}")
 echo "Images found: ${images_num}"
+
+# Show up to 5 images samples
+[ ${images_num} -lt 5 ] && num_to_show=${images_num} || num_to_show=5
+
+echo "First ${num_to_show} samples:"
+print_num_elements "${images}" ${num_to_show}
 
 # Get user confirmation
 yn="nope"
