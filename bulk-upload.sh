@@ -70,7 +70,7 @@ fsize_bytes()
 fsize_print()
 {
     bytes=$(fsize_bytes "${1}")
-    $(size_print ${bytes})
+    size_print ${bytes}
 }
 
 image_url()
