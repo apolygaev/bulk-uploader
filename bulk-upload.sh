@@ -12,6 +12,8 @@
 endpoint="http://image-uploader.bookmate.services/upload"
 app_curl=$(type -p curl)
 
+extensions="jpg|jpeg|png|gif"
+
 output_failed="upload.failed"
 output_success="upload.success"
 
@@ -85,6 +87,14 @@ http_code()
     sed -nr 's/([0-9]{3}).*/\1/p' <<< "${1}"
 }
 
+find_images()
+{
+    images_root_dir="${1}"
+    extensions="${2}"
+
+    find "${images_root_dir}" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
+}
+
 # Parse command line parameters
 if [ -z "${1}" ]; then
     print_help
@@ -104,10 +114,10 @@ echo "Upload endpoint: ${endpoint}"
 echo "Images root directory: ${images_root_dir}"
 
 # Find images to upload
-echo "Searching for images to upload..."
-images=$(find . -type f -regextype posix-egrep -iregex ".*\.(jpg|jpeg|png|gif)$")
-images_num=$(wc -l <<< "${images}")
+echo "Searching for images to upload (${extensions})..."
+images=$(find_images "${images_root_dir}" "${extensions}")
 
+images_num=$(wc -l <<< "${images}")
 echo "Images found: ${images_num}"
 
 # Cleanup output files
