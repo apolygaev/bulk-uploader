@@ -43,13 +43,13 @@ size_print()
 
     div=$((1024 * 1024 * 1024))
     if [ ${bytes} -ge ${div} ]; then
-        echo "$((bytes / div)) GB"
+        echo "$((bytes / div)).$(( bytes % div)) GB"
         return 0
     fi
 
     div=$((1024 * 1024))
     if [ ${bytes} -ge ${div} ]; then
-        echo "$((bytes / div)) MB"
+        echo "$((bytes / div)).$(( bytes % div)) MB"
         return 0
     fi
 
