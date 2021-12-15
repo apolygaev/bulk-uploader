@@ -120,6 +120,22 @@ images=$(find_images "${images_root_dir}" "${extensions}")
 images_num=$(wc -l <<< "${images}")
 echo "Images found: ${images_num}"
 
+# Get user confirmation
+yn="nope"
+
+while [ "${yn}" != "n" ] && [ "${yn}" != "y" ]
+do
+    echo "Please confirm images upload:"
+    echo -e "\tEndpoint: ${endpoint}"
+    echo -e "\tImages:   ${images_num}"
+    read -p "Please enter 'y' or 'n' [Ctrl+C to exit]: " yn
+done
+
+if [ "${yn}" == "n" ]; then
+    echo "Upload rejected by user"
+    exit 1
+fi
+
 # Cleanup output files
 echo "Cleaning up output files: ${output_success}, ${output_failed}"
 echo -n "" > "${output_success}"
