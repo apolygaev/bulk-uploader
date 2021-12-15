@@ -12,7 +12,7 @@
 endpoint="http://image-uploader.bookmate.services/upload"
 app_curl=$(type -p curl)
 
-extensions="jpg|jpeg|png|gif"
+extensions="jpg|jpeg|png|gif|svg|webp"
 
 output_failed="upload.failed"
 output_success="upload.success"
