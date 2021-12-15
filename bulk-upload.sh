@@ -37,14 +37,9 @@ curl_upload_file()
     curl -is -X POST -H 'Content-Type: multipart/form-data' -F "data=@${image}" "${endpoint}"
 }
 
-fsize_bytes()
+size_print()
 {
-    stat -c '%s' "${1}"
-}
-
-fsize_print()
-{
-    bytes=$(fsize_bytes "${1}")
+    bytes=${1}
 
     div=$((1024))
     if [ ${bytes} -ge ${div} ]; then
@@ -65,6 +60,17 @@ fsize_print()
     fi
 
     echo "${bytes}"
+}
+
+fsize_bytes()
+{
+    stat -c '%s' "${1}"
+}
+
+fsize_print()
+{
+    bytes=$(fsize_bytes "${1}")
+    $(size_print ${bytes})
 }
 
 image_url()
@@ -112,6 +118,20 @@ print_num_elements()
     done
 }
 
+files_size()
+{
+    files="${1}"
+    bytes=0
+
+    for f in ${files}; do
+        fsize=$(fsize_bytes "${f}")
+        bytes=$((bytes + fsize))
+    done
+
+    echo ${bytes}
+    return ${bytes}
+}
+
 # Parse command line parameters
 if [ -z "${1}" ]; then
     print_help
@@ -132,11 +152,13 @@ echo "Images root directory: ${images_root_dir}"
 echo "Images extensions:     ${extensions}"
 
 # Find images to upload
-echo "Searching for images to upload (${extensions})..."
+echo "Searching for images to upload ..."
 images=$(find_images "${images_root_dir}" "${extensions}")
 
 images_num=$(wc -l <<< "${images}")
-echo "Images found: ${images_num}"
+images_size=$(files_size "${images}")
+
+echo "Images found: ${images_num} Size: $(size_print ${images_size})"
 
 # Show up to 5 images samples
 [ ${images_num} -lt 5 ] && num_to_show=${images_num} || num_to_show=5
@@ -152,6 +174,7 @@ do
     echo "Please confirm images upload:"
     echo -e "\tEndpoint: ${endpoint}"
     echo -e "\tImages:   ${images_num}"
+    echo -e "\tSize:     $(size_print "${images_size}")"
     read -p "Please enter 'y' or 'n' [Ctrl+C to exit]: " yn
 done
 
