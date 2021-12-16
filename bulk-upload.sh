@@ -101,10 +101,10 @@ fsize_bytes()
         exit 1
     fi
 
+    local bytes
     bytes=$(stat -c '%s' "${1}")
 
     echo "${bytes}"
-    return ${bytes}
 }
 
 fsize_print()
@@ -114,7 +114,9 @@ fsize_print()
         exit 1
     fi
 
-    local bytes=$(fsize_bytes "${1}")
+    local bytes
+    bytes=$(fsize_bytes "${1}")
+
     size_print ${bytes}
 }
 
@@ -204,7 +206,6 @@ files_size()
     done
 
     echo ${bytes}
-    return ${bytes}
 }
 
 # Parse command line parameters
@@ -250,7 +251,7 @@ do
     echo -e "\tEndpoint: ${endpoint}"
     echo -e "\tImages:   ${images_num}"
     echo -e "\tSize:     $(size_print "${images_size}")"
-    read -p "Please enter 'y' or 'n' [Ctrl+C to exit]: " yn
+    read -rp "Please enter 'y' or 'n' [Ctrl+C to exit]: " yn
 done
 
 if [ "${yn}" == "n" ]; then
