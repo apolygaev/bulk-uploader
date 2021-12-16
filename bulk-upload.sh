@@ -34,14 +34,27 @@ print_help()
 # Other functions
 curl_upload_file()
 {
+    if [ $# -ne 2 ]; then
+        echo "Usage: curl_upload_file <image> <endpoint>"
+        exit 1
+    fi
+
+    local image="${1}"
+    local endpoint="${2}"
+
     "${app_curl}" -is -X POST -H 'Content-Type: multipart/form-data' -F "data=@${image}" "${endpoint}"
 }
 
 size_print()
 {
-    bytes=${1}
+    if [ $# -ne 1 ]; then
+        echo "Usage: size_print <bytes>"
+        exit 1
+    fi
 
-    div=$((1024 * 1024 * 1024))
+    local bytes=${1}
+
+    local div=$((1024 * 1024 * 1024))
     if [ ${bytes} -ge ${div} ]; then
         echo "$((bytes / div)).$(( bytes % div)) GB"
         return 0
@@ -64,17 +77,35 @@ size_print()
 
 fsize_bytes()
 {
-    stat -c '%s' "${1}"
+    if [ $# -ne 1 ]; then
+        echo "Usage: fsize_bytes <file>"
+        exit 1
+    fi
+
+    bytes=$(stat -c '%s' "${1}")
+
+    echo "${bytes}"
+    return ${bytes}
 }
 
 fsize_print()
 {
-    bytes=$(fsize_bytes "${1}")
+    if [ $# -ne 1 ]; then
+        echo "Usage: fsize_print <file>"
+        exit 1
+    fi
+
+    local bytes=$(fsize_bytes "${1}")
     size_print ${bytes}
 }
 
 image_url()
 {
+    if [ $# -ne 1 ]; then
+        echo "Usage: image_url <curl_output>"
+        exit 1
+    fi
+
     # 1. Get last line in curl output
     # 2. Get image url from ["<url here>"]
     tail -n 1 <<< "${1}" | sed -nr 's/\[\"(.*)\"\]/\1/p'
@@ -82,6 +113,11 @@ image_url()
 
 http_codes_list()
 {
+    if [ $# -ne 1 ]; then
+        echo "Usage: http_codes_list <curl_output>"
+        exit 1
+    fi
+
     # 1. Remove CR from curl output
     # 2. Print HTTP ret codes after 'HTTP/1.1' pattern
     sed 's/\r//g'  <<< "${1}" | sed -nr "s/HTTP\/[0-9]\.[0-9] (.*)/\1/p"
@@ -89,23 +125,38 @@ http_codes_list()
 
 http_code()
 {
+    if [ $# -ne 1 ]; then
+        echo "Usage: http_code <curl_output>"
+        exit 1
+    fi
+
     # Print HTTP code from '200 OK' pattern
     sed -nr 's/([0-9]{3}).*/\1/p' <<< "${1}"
 }
 
 find_images()
 {
-    images_root_dir="${1}"
-    extensions="${2}"
+    if [ $# -ne 2 ]; then
+        echo "Usage: find_images <images_root_dir> <extensions>"
+        exit 1
+    fi
 
-    find "${images_root_dir}/" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
+    local images_root_dir="${1}"
+    local extensions="${2}"
+
+    /usr/bin/find "${images_root_dir}/" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
 }
 
 print_num_elements()
 {
-    array="${1}"
-    num=${2}
-    curr=0
+    if [ $# -ne 2 ]; then
+        echo "Usage: print_num_elements <array> <num>"
+        exit 1
+    fi
+
+    local array="${1}"
+    local num=${2}
+    local curr=0
 
     for n in ${array}; do
         if [ ${curr} -lt ${num} ]; then
@@ -120,8 +171,13 @@ print_num_elements()
 
 files_size()
 {
-    files="${1}"
-    bytes=0
+    if [ $# -ne 1 ]; then
+        echo "Usage:files_size <array>"
+        exit 1
+    fi
+
+    local files="${1}"
+    local bytes=0
 
     for f in ${files}; do
         fsize=$(fsize_bytes "${f}")
