@@ -10,7 +10,7 @@
 
 # Default settings
 endpoint="http://image-uploader.bookmate.services/upload"
-app_curl=$(type -p curl)
+app_curl="/usr/bin/curl"
 
 extensions="jpg|jpeg|png|gif|svg|webp"
 
@@ -18,7 +18,7 @@ output_failed="upload.failed"
 output_success="upload.success"
 
 # Check defaults
-if [ -z "${app_curl}" ]; then
+if [ ! -x "${app_curl}" ]; then
     echo "Please install 'curl' package"
     exit 1
 fi
@@ -34,7 +34,7 @@ print_help()
 # Other functions
 curl_upload_file()
 {
-    curl -is -X POST -H 'Content-Type: multipart/form-data' -F "data=@${image}" "${endpoint}"
+    "${app_curl}" -is -X POST -H 'Content-Type: multipart/form-data' -F "data=@${image}" "${endpoint}"
 }
 
 size_print()
