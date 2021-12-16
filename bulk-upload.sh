@@ -285,7 +285,7 @@ for image in $images; do
     curl_ret=$?
 
     # Parse curl response headers
-    http_ret=$(http_codes_list "${curl_output}" | tail -n 1)
+    http_ret=$(http_codes_list "${curl_output}" | "${app_tail}" -n 1)
     http_ret_code=$(http_code "${http_ret}")
 
     # Check result
