@@ -6,7 +6,7 @@
 # script <images_root_directory>
 #
 # Required packages:
-# curl, sed, coreutils, findutils
+#   GNU/Linux: curl, sed, coreutils, findutils
 
 # Default settings
 endpoint="http://image-uploader.bookmate.services/upload"
@@ -15,32 +15,42 @@ app_curl="/usr/bin/curl"
 app_sed="/usr/bin/sed"
 app_tail="/usr/bin/tail"
 app_find="/usr/bin/find"
+app_stat="/usr/bin/stat"
 
 extensions="jpg|jpeg|png|gif|svg|webp"
 
 output_failed="upload.failed"
 output_success="upload.success"
 
-# Check for required binaries
-if [ ! -x "${app_curl}" ]; then
-    echo "Please install 'curl' package"
-    exit 1
-fi
+# Check for required applications
+check_app()
+{
+    if [ $# -ne 1 ]; then
+        echo "Usage: check_app <app_path>"
+        exit 1
+    fi
 
-if [ ! -x "${app_sed}" ]; then
-    echo "Please install 'sed' package"
-    exit 1
-fi
+    local app="${1}"
 
-if [ ! -x "${app_tail}" ]; then
-    echo "Please install 'coreutils' package"
-    exit 1
-fi
+    if [ ! -x "${app}" ]; then
+        echo "Application '${app}' is not found"
+        exit 1
+    fi
+}
 
-if [ ! -x "${app_find}" ]; then
-    echo "Please install 'findutils' package"
-    exit 1
-fi
+check_apps()
+{
+    if [ $# -ne 1 ]; then
+        echo "Usage: check_apps <apps_list>"
+        exit 1
+    fi
+
+    for app in ${1}; do
+        check_app "${app}"
+    done
+}
+
+check_apps "${app_curl} ${app_sed} ${app_tail} ${app_find} ${app_stat}"
 
 # Help function
 print_help()
@@ -102,7 +112,7 @@ fsize_bytes()
     fi
 
     local bytes
-    bytes=$(stat -c '%s' "${1}")
+    bytes=$("${app_stat}" -c '%s' "${1}")
 
     echo "${bytes}"
 }
