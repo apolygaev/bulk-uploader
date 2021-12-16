@@ -141,7 +141,7 @@ fi
 images_root_dir="${1}"
 
 # Check command line parameters
-if [ ! -d "${1}" ]; then
+if [ ! -d "${images_root_dir}" ]; then
     echo "Directory not exists: '${images_root_dir}'"
     exit 1
 fi
