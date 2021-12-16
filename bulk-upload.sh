@@ -10,16 +10,35 @@
 
 # Default settings
 endpoint="http://image-uploader.bookmate.services/upload"
+
 app_curl="/usr/bin/curl"
+app_sed="/usr/bin/sed"
+app_tail="/usr/bin/tail"
+app_find="/usr/bin/find"
 
 extensions="jpg|jpeg|png|gif|svg|webp"
 
 output_failed="upload.failed"
 output_success="upload.success"
 
-# Check defaults
+# Check for required binaries
 if [ ! -x "${app_curl}" ]; then
     echo "Please install 'curl' package"
+    exit 1
+fi
+
+if [ ! -x "${app_sed}" ]; then
+    echo "Please install 'sed' package"
+    exit 1
+fi
+
+if [ ! -x "${app_tail}" ]; then
+    echo "Please install 'coreutils' package"
+    exit 1
+fi
+
+if [ ! -x "${app_find}" ]; then
+    echo "Please install 'findutils' package"
     exit 1
 fi
 
@@ -108,7 +127,7 @@ image_url()
 
     # 1. Get last line in curl output
     # 2. Get image url from ["<url here>"]
-    tail -n 1 <<< "${1}" | sed -nr 's/\[\"(.*)\"\]/\1/p'
+    "${app_tail}" -n 1 <<< "${1}" | "${app_sed}" -nr 's/\[\"(.*)\"\]/\1/p'
 }
 
 http_codes_list()
@@ -120,7 +139,7 @@ http_codes_list()
 
     # 1. Remove CR from curl output
     # 2. Print HTTP ret codes after 'HTTP/1.1' pattern
-    sed 's/\r//g'  <<< "${1}" | sed -nr "s/HTTP\/[0-9]\.[0-9] (.*)/\1/p"
+    "${app_sed}" 's/\r//g'  <<< "${1}" | "${app_sed}" -nr "s/HTTP\/[0-9]\.[0-9] (.*)/\1/p"
 }
 
 http_code()
@@ -131,7 +150,7 @@ http_code()
     fi
 
     # Print HTTP code from '200 OK' pattern
-    sed -nr 's/([0-9]{3}).*/\1/p' <<< "${1}"
+    "${app_sed}" -nr 's/([0-9]{3}).*/\1/p' <<< "${1}"
 }
 
 find_images()
@@ -144,7 +163,7 @@ find_images()
     local images_root_dir="${1}"
     local extensions="${2}"
 
-    /usr/bin/find "${images_root_dir}/" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
+    "${app_find}" "${images_root_dir}/" -type f -regextype posix-egrep -iregex ".*\.(${extensions})$"
 }
 
 print_num_elements()
