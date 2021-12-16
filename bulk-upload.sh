@@ -26,31 +26,19 @@ output_success="upload.success"
 check_app()
 {
     if [ $# -ne 1 ]; then
-        echo "Usage: check_app <app_path>"
-        exit 1
-    fi
-
-    local app="${1}"
-
-    if [ ! -x "${app}" ]; then
-        echo "Application '${app}' is not found"
-        exit 1
-    fi
-}
-
-check_apps()
-{
-    if [ $# -ne 1 ]; then
-        echo "Usage: check_apps <apps_list>"
+        echo "Usage: check_app <app | apps_list>"
         exit 1
     fi
 
     for app in ${1}; do
-        check_app "${app}"
+        if [ ! -x "${app}" ]; then
+            echo "Application '${app}' is not found"
+            exit 1
+        fi
     done
 }
 
-check_apps "${app_curl} ${app_sed} ${app_tail} ${app_find} ${app_stat}"
+check_app "${app_curl} ${app_sed} ${app_tail} ${app_find} ${app_stat}"
 
 # Help function
 print_help()
